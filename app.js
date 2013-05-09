@@ -60,7 +60,7 @@ http.createServer(function (request, response) {
         response.end(result);
       } else {
         // No result, get search from Twitter and save to Redis
-        twitter.search(searchphrase.trim(), {}, function(err, data) {
+        twitter.search(searchphrase.trim(), {count: 1}, function(err, data) {
           data = JSON.stringify(data);
           redis.setex(redisKey, 900, data);
           response.end(data);
