@@ -1,8 +1,19 @@
 var http = require('http')
     , url = require("url")
     , fs = require('fs')
+    , express = require('express')
     , twitter  = require("ntwitter")
     , redis = require('redis');
+
+var app = express();
+
+app.configure( 
+    function() {
+      app.set('port', process.env.PORT || 5000);
+      app.use(app.router);
+      app.enable("jsonp callback");
+    }
+);
 
 /* Establish Twitter connection */
 
@@ -29,53 +40,40 @@ redis.on("error", function (err) {
 
 /* Server */
 
-http.createServer(function (request, response) {
+app.get('/search/*', function(request, response) {
+    // Set cross domain headers
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-  var path_parts = url.parse(request.url, true).pathname.split('/');
-  
-  if (path_parts[1] == 'search') {
-    // Create a searchphrase by joining the parts with a space for each slash
-    // Note: I then split the string to remove the 'search' text
-    // Usage: /search/foo/AND/bar
-    // Becomes: 'foo AND bar'
-    var searchphrase = path_parts.join(' ').split('search ')[1];
-
-    // Add in a URL search if specified
-    // /search/foo/?url=http://example.com
-    // Becomes: 'foo http://example.com'
-    if (url.parse(request.url, true).query.url !== undefined) {
-      searchphrase += ' ' + url.parse(request.url, true).query.url;
+    var searchphrase = request.params[0].split('/').join(' ');
+    if (request.query.url.length > 0) {
+      searchphrase += ' ' + request.query.url;
     }
-
-    response.writeHead(200, {'Content-Type': 'application/json'});
-
     // Check if cached
     var redisKey = searchphrase.replace(' ', '');
     redis.get(redisKey, function (err, result) {
-      if (err) {
-        console.log('Error: '+err);
-        return;
-      }
+      if (err) { console.log('Error: '+err); return; }
       if (result) {
-        response.end(result);
+        response.json(result);
       } else {
         // No result, get search from Twitter and save to Redis
         twitter.search(searchphrase.trim(), {count: 1}, function(err, data) {
-          data = JSON.stringify(data);
           redis.setex(redisKey, 900, data);
-          response.end(data);
+          response.json(data);
         });
       }
         
     });
+});
 
-    
-  } else {
-    response.writeHead(404, {"Content-Type": "text/plain"});
-    response.write("Twitter Node app: See http://github.com/donovanh/tweets");
-    response.end();
+app.get(/^.*$/, 
+  function(request, response) {
+    response.redirect('http://hop.ie/tweets/');
   }
-  
-}).listen(process.env.PORT || 5000);
+);
+
+http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+});
 
 console.log('Server running at http://127.0.0.1:5000/');
