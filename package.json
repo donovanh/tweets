@@ -1,9 +1,0 @@
-{
-    "name": "node-tweet"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "ntwitter": "*",
-      "redis": "*"
-  }
-}
