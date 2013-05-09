@@ -35,11 +35,11 @@ Currently the app will return a 404 unless the path contains either <code>search
 
 Search is as follows:
 
-    http://localhost:4020/search/foo
+    http://localhost:5000/search/foo
 
 This will search Twitter for the phrase "foo" and return a JSON response containing the results. You can create more complex queries:
 
-    http://localhost:4020/search/this/AND/that
+    http://localhost:5000/search/this/AND/that
 
 The search in this case will be "this AND that".
 
@@ -47,9 +47,16 @@ The search in this case will be "this AND that".
 
 The <code>stream</code> function follows a similar pattern and uses Twitter's <code>track</code> filter for creating a stream.
 
-    http://localhost:4020/stream/foo
+    http://localhost:5000/stream/foo
 
 This will return a streamed JSON response that could be hooked into a socket on the browser.
+
+### Using URLs
+
+Adding a URL into the path won't work as the app splits the URL parts by <code>/</code>. To get around this, you can structure a request like this to search for a specific URL:
+
+  http://localhost:5000/search/?url=example.com/your/path
+  http://localhost:5000/search/keyword/?url=example.com/your/path
 
 ## Hosting
 

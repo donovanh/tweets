@@ -14,7 +14,8 @@ var twitter = new twitter({
 
 http.createServer(function (request, response) {
 
-  var path_parts = url.parse(request.url, true).path.split('/');
+  var path_parts = url.parse(request.url, true).path.split('?')[0].split('/');
+  
   if (path_parts[1] == 'search') {
     // Create a searchphrase by joining the parts with a space for each slash
     // Note: I then split the string to remove the 'search' text
@@ -22,13 +23,28 @@ http.createServer(function (request, response) {
     // Becomes: 'foo AND bar'
     var searchphrase = path_parts.join(' ').split('search ')[1];
 
-    twitter.search(searchphrase, {}, function(err, data) {
+    // Add in a URL search if specified
+    // /search/foo/?url=http://example.com
+    // Becomes: 'foo http://example.com'
+    if (url.parse(request.url, true).query.url !== undefined) {
+      searchphrase += ' ' + url.parse(request.url, true).query.url;
+    }
+
+    twitter.search(searchphrase.trim(), {}, function(err, data) {
       response.writeHead(200, {'Content-Type': 'application/json'});
       response.end(JSON.stringify(data));
     });
   } else if (path_parts[1] == 'stream') {
     // Similar to search but returns a live stream for use with sockety yokes
     var searchphrase = path_parts.join(' ').split('stream ')[1];
+
+    // Add in a URL search if specified
+    // /search/foo/?url=http://example.com
+    // Becomes: 'foo http://example.com'
+    if (url.parse(request.url, true).query.url !== undefined) {
+      searchphrase += ' ' + url.parse(request.url, true).query.url;
+    }
+
     response.writeHead(200, {'Content-Type': 'application/json'});
     twitter.stream('statuses/filter', {'track':searchphrase}, function(stream) {
       stream.on('data', function (data) {
@@ -37,7 +53,7 @@ http.createServer(function (request, response) {
     });
   } else {
     response.writeHead(404, {"Content-Type": "text/plain"});
-    response.write("I'm sorry, Dave. I'm afraid I can't do that.");
+    response.write("Twitter Node app: See http://github.com/donovanh/nodetwooter");
     response.end();
   }
   
