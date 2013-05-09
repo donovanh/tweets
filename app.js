@@ -5,10 +5,10 @@ var http = require('http')
 /* Establish Twitter connection */
 
 var twitter = new twitter({
-  consumer_key: 'TkWQBGYHO7r8zPF8rjg',
-  consumer_secret: 'YxLhq6R9v3BOGgWofggkSx61a6YbzoJVN1cQ61zPAE',
-  access_token_key: '280135383-4evP3U5FLSaBfw1HZ81orKBK85qTc9f2xcekSwlk',
-  access_token_secret: 'rpyDgoDgAruoNkAHfNscMKNEjUIDiCn3rYq0sYK6Zg'
+  consumer_key: process.env.consumer_key,
+  consumer_secret: process.env.consumer_secret,
+  access_token_key: process.env.access_token_key,
+  access_token_secret: process.env.access_token_secret
 });
 
 
