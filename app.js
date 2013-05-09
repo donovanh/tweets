@@ -11,9 +11,6 @@ var twitter = new twitter({
   access_token_secret: process.env.access_token_secret
 });
 
-// Get the port from the port Heroku supplies
-var port = process.env.PORT || 5000;
-
 http.createServer(function (request, response) {
 
   var path_parts = url.parse(request.url, true).path.split('/');
@@ -34,6 +31,6 @@ http.createServer(function (request, response) {
     response.end();
   }
   
-}).listen(port, '127.0.0.1');
+}).listen(process.env.PORT || 5000);
 
 console.log('Server running at http://127.0.0.1:5000/');
