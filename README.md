@@ -33,7 +33,15 @@ The search in this case will be "this AND that".
 
 ## Hosting
 
-I have deployed it to Heroku using [these instructions](https://devcenter.heroku.com/articles/nodejs).
+I have deployed it to Heroku using [these instructions](https://devcenter.heroku.com/articles/nodejs). Since it's a light, database-free app, it could just as well live on a free Appfog instance also.
+
+## Dependencies
+
+This app relies on [ntwitter](https://github.com/AvianFlu/ntwitter).
+
+## TODO
+
+Tweet streaming would be nice, so that a socket-enabled static site could show a dynamically updating list.
 
 ## License
 
