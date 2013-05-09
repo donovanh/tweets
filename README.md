@@ -45,14 +45,6 @@ This will search Twitter for the phrase "foo" and return a JSON response contain
 
 The search in this case will be "this AND that".
 
-### Stream
-
-The <code>stream</code> function follows a similar pattern and uses Twitter's <code>track</code> filter for creating a stream.
-
-    http://localhost:5000/stream/foo
-
-This will return a streamed JSON response that could be hooked into a socket on the browser.
-
 ### Using URLs
 
 Adding a URL into the path won't work as the app splits the URL parts by <code>/</code>. To get around this, you can structure a request like this to search for a specific URL:
