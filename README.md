@@ -55,8 +55,8 @@ This will return a streamed JSON response that could be hooked into a socket on 
 
 Adding a URL into the path won't work as the app splits the URL parts by <code>/</code>. To get around this, you can structure a request like this to search for a specific URL:
 
-  http://localhost:5000/search/?url=example.com/your/path
-  http://localhost:5000/search/keyword/?url=example.com/your/path
+    http://localhost:5000/search/?url=example.com/your/path
+    http://localhost:5000/search/keyword/?url=example.com/your/path
 
 ## Hosting
 
@@ -70,7 +70,7 @@ This app relies on [ntwitter](https://github.com/AvianFlu/ntwitter).
 
 ## TODO
 
-Tweet streaming would be nice, so that a socket-enabled static site could show a dynamically updating list.
+Some tests would be a good idea. I threw this implementation together in a morning as a proof of concept, so before doing any more work on it I'll get some unit tests in place.
 
 ## License
 
