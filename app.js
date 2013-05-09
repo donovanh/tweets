@@ -1,5 +1,6 @@
 var http = require('http')
     , url = require("url")
+    , fs = require('fs')
     , twitter  = require("ntwitter")
 
 /* Establish Twitter connection */
@@ -17,13 +18,22 @@ http.createServer(function (request, response) {
   if (path_parts[1] == 'search') {
     // Create a searchphrase by joining the parts with a space for each slash
     // Note: I then split the string to remove the 'search' text
-    // Usage: /search/foo/and/poo
-    // Becomes: 'foo and poo'
+    // Usage: /search/foo/AND/bar
+    // Becomes: 'foo AND bar'
     var searchphrase = path_parts.join(' ').split('search ')[1];
 
     twitter.search(searchphrase, {}, function(err, data) {
       response.writeHead(200, {'Content-Type': 'application/json'});
       response.end(JSON.stringify(data));
+    });
+  } else if (path_parts[1] == 'stream') {
+    // Similar to search but returns a live stream for use with sockety yokes
+    var searchphrase = path_parts.join(' ').split('stream ')[1];
+    response.writeHead(200, {'Content-Type': 'application/json'});
+    twitter.stream('statuses/filter', {'track':searchphrase}, function(stream) {
+      stream.on('data', function (data) {
+        response.write(JSON.stringify(data));
+      });
     });
   } else {
     response.writeHead(404, {"Content-Type": "text/plain"});
