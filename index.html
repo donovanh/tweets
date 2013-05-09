@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <title>Tweets (for static websites) - Embed Twitter searches</title>
+    <link href="stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <article class="content">
+      <h1 id="responsive_title">Tweets</h1>
+      <p class="slogan">Embed twitter search results in your static HTML using JavaScript.</p>
+      <div class="tweets" data-search="hop.ie"></div>
+
+      <h2>How it works</h2>
+      <p>Recently, Twitter made some changes and stopped supporting embedded tweets using pure JavaScript. This was a move to restrict unauthorised users and limit the traffic hitting their servers. We can still use the Twitter API, but since authentication is now required, it's not possible to do so with only JavaScript.</p>
+      <p><a href="http://github.com/donovanh/tweets">Tweets</a> is a server-side app that provides Twitter search results, with the correct authentication in place. It is currently available as a Node.js app that you host on your own servers, or a free service such as Heroku or Appfog.</p>
+      <p>Download <a href="http://github.com/donovanh/tweets">the Tweets Node.js app</a> here.</p>
+    </article>
+    <script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+    <script>
+      $.each($('.tweets'), function(index, tweetbox) {
+        // Get the 'data-search' value and search Twitter for any results
+        var searchPhrase = $(tweetbox).attr('data-search');
+        if (searchPhrase.length > 0) {
+          $.get('http://tweets.hop.ie/search/'+searchPhrase, function(data) {
+            $(tweetbox).html(data);
+          });
+        }
+      });
+    </script>
+    <script type="text/html" id="tweet-template">
+
+    </script>
+  </body>
+</html>
