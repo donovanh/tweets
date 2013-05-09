@@ -35,6 +35,8 @@ The search in this case will be "this AND that".
 
 I have deployed it to Heroku using [these instructions](https://devcenter.heroku.com/articles/nodejs). Since it's a light, database-free app, it could just as well live on a free Appfog instance also.
 
+You'll need to add the environment variables listed above when setting up your app with Heroku etc.
+
 ## Dependencies
 
 This app relies on [ntwitter](https://github.com/AvianFlu/ntwitter).
