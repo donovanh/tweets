@@ -13,28 +13,21 @@ var twitter = new twitter({
   access_token_secret: process.env.access_token_secret
 });
 
-/* Establisn Redis connection for caching */
+/* Establisn Redis connection (using Redis Cloud) for caching */
 
-if (process.env.REDISTOGO_URL) {
-  var rtg   = url.parse(process.env.REDISTOGO_URL);
-  var redis = redis.createClient(rtg.port, rtg.hostname);
-  redis.auth(rtg.auth.split(":")[1]); 
+if (process.env.REDISCLOUD_URL) {
+  var redisURL = url.parse(process.env.REDISCLOUD_URL);
+  var redis = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
+  redis.auth(redisURL.auth.split(":")[1]);
 } else {
   var redis = redis.createClient();
 }
 
-/* Server */
-
-/*
-Add caching
-redis.get('some-key-value', function (err, result) {
-  if (err || !result)
-     execute_function(zipcode, handler);
-  else
-    res.end(result);
+redis.on("error", function (err) {
+    console.log("Redis client error: ", err);
 });
-*/
 
+/* Server */
 
 http.createServer(function (request, response) {
 
@@ -59,7 +52,7 @@ http.createServer(function (request, response) {
     // Check if cached
     var redisKey = searchphrase.replace(' ', '');
     redis.get(redisKey, function (err, result) {
-      if (err || !result) {
+      if (err) {
         console.log('Error: '+err);
         return;
       }
@@ -69,8 +62,8 @@ http.createServer(function (request, response) {
         // No result, get search from Twitter and save to Redis
         twitter.search(searchphrase.trim(), {}, function(err, data) {
           data = JSON.stringify(data);
-          redis.setex(redisKey, 21600, data);
-          response.end(JSON.stringify(data));
+          redis.setex(redisKey, 900, data);
+          response.end(data);
         });
       }
         
