@@ -13,6 +13,10 @@ Clone the app to a local directory. You'll need to [register a new application](
     access_token_key=XXX
     access_token_secret=XXX
 
+## Caching: Redis Cloud
+
+Since Twitter imposes quite strick usage limits, the app stores requests in Redis with a 15 minute expiry. Since I've deployed this to Heroku, I've added support for Redis Cloud. If using Heroku, activating Redis Cloud (currently with a 20MB free plan) will automatically work.
+
 ## Running the app
 
 Ensure you have [Node.js](http://nodejs.org) installed. Install any dependencies first:
