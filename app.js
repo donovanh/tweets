@@ -46,7 +46,7 @@ app.get('/search/*', function(request, response) {
     response.header("Access-Control-Allow-Headers", "X-Requested-With");
 
     var searchphrase = request.params[0].split('/').join(' ');
-    if (request.query.url.length > 0) {
+    if (request.query.url !== undefined && request.query.url.length > 0) {
       searchphrase += ' ' + request.query.url;
     }
     // Check if cached
