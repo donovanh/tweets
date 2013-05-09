@@ -21,7 +21,7 @@ Then run the app:
 
     $ node app
 
-By default, the app runs on port <code>4020</code>. Usage is as follows:
+Since I wanted it to work with Heroku, the app runs by default on port <code>5000</code>. Usage is as follows:
 
     http://localhost:4020/search/foo
 
@@ -30,6 +30,10 @@ This will search Twitter for the phrase "foo" and return a JSON response contain
     http://localhost:4020/search/this/AND/that
 
 The search in this case will be "this AND that".
+
+## Hosting
+
+I have deployed it to Heroku using [these instructions](https://devcenter.heroku.com/articles/nodejs).
 
 ## License
 
