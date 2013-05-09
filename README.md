@@ -21,7 +21,15 @@ Then run the app:
 
     $ node app
 
-Since I wanted it to work with Heroku, the app runs by default on port <code>5000</code>. Usage is as follows:
+Since I wanted it to work with Heroku, the app runs by default on port <code>5000</code>.
+
+## Usage
+
+Currently the app will return a 404 unless the path contains either <code>search</code> or <code>stream</code>.
+
+### Search
+
+Search is as follows:
 
     http://localhost:4020/search/foo
 
@@ -30,6 +38,14 @@ This will search Twitter for the phrase "foo" and return a JSON response contain
     http://localhost:4020/search/this/AND/that
 
 The search in this case will be "this AND that".
+
+### Stream
+
+The <code>stream</code> function follows a similar pattern and uses Twitter's <code>track</code> filter for creating a stream.
+
+    http://localhost:4020/stream/foo
+
+This will return a streamed JSON response that could be hooked into a socket on the browser.
 
 ## Hosting
 
