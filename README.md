@@ -21,6 +21,10 @@ Then run the app:
 
     $ node app
 
+If you have <code>foreman</code> installed, run the app like so:
+
+    $ foreman start
+
 Since I wanted it to work with Heroku, the app runs by default on port <code>5000</code>.
 
 ## Usage
