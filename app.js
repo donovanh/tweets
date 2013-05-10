@@ -57,7 +57,7 @@ app.get('/search/*', function(request, response) {
         response.json(JSON.parse(result));
       } else {
         // No result, get search from Twitter and save to Redis
-        twitter.search(searchphrase.trim(), {count: 1}, function(err, data) {
+        twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
           redis.setex(redisKey, 900, JSON.stringify(data));
           response.json(data);
         });
