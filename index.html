@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Tweets (for static websites) - Embed Twitter searches</title>
+    <title>Tweets - Embed Twitter searches</title>
     <link href="stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:700' rel='stylesheet' type='text/css'>
@@ -9,28 +9,56 @@
   <body>
     <article class="content">
       <h1 id="responsive_title">Tweets</h1>
-      <p class="slogan">Embed twitter search results in your static HTML using JavaScript.</p>
+      <p class="slogan">Embed Twitter search results in your site using JavaScript.</p>
       <div class="tweets" data-search="hop.ie"></div>
 
       <h2>How it works</h2>
-      <p>Recently, Twitter made some changes and stopped supporting embedded tweets using pure JavaScript. This was a move to restrict unauthorised users and limit the traffic hitting their servers. We can still use the Twitter API, but since authentication is now required, it's not possible to do so with only JavaScript.</p>
-      <p><a href="http://github.com/donovanh/tweets">Tweets</a> is a server-side app that provides Twitter search results, with the correct authentication in place. It is currently available as a Node.js app that you host on your own servers, or a free service such as Heroku or Appfog.</p>
+      <p>Twitter no longer allows embedded tweets using pure JavaScript, as all requests require authentication. This means we can no longer use the Twitter API with only JavaScript.</p>
+      <p><a href="http://github.com/donovanh/tweets">Tweets</a> is a server-side app that provides Twitter search results, with the correct authentication in place. It is currently available as a Node.js app that you host on your own servers or elsewhere.</p>
       <p>Download <a href="http://github.com/donovanh/tweets">the Tweets Node.js app</a> here.</p>
     </article>
     <script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0-rc.3/handlebars.min.js"></script>
     <script>
       $.each($('.tweets'), function(index, tweetbox) {
         // Get the 'data-search' value and search Twitter for any results
         var searchPhrase = $(tweetbox).attr('data-search');
         if (searchPhrase.length > 0) {
           $.get('http://tweets.hop.ie/search/'+searchPhrase, function(data) {
-            $(tweetbox).html(data);
+            //$(tweetbox).text(JSON.stringify(data));
+            var outputHTML = '';
+            $.each(data.results, function(index, tweet) {
+              tweet.text = replaceURLWithHTMLLinks(tweet.text);
+              var source = $("#tweet-template").html();
+              var template = Handlebars.compile(source);
+              outputHTML += template(tweet);
+            });
+            $(tweetbox).html(outputHTML);
           });
         }
       });
     </script>
-    <script type="text/html" id="tweet-template">
-
+    <script type="text/x-handlebars-template" id="tweet-template">
+      <article class="tweet">
+        <section class="user-details">
+          <a href="http://twitter.com/{{from_user}}">
+            <div class="user-image" style="background-image: url({{profile_image_url}})"></div>
+            <p>
+              <strong>{{from_user_name}}</strong>
+              <span>{{from_user}}</span>
+            </p>
+          </a>
+        </section>
+        <p class="text">{{{text}}}</p>
+        <p class="timing"><a href="http://twitter.com/{{from_user}}/statuses/{{id_str}}">{{created_at}}</a></p>
+      </article>
     </script>
   </body>
 </html>
+
+<script>
+function replaceURLWithHTMLLinks(text) {
+  var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  return text.replace(exp,"<a href='$1'>$1</a>"); 
+}
+</script>
