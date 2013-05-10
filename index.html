@@ -12,11 +12,26 @@
       <p class="slogan">Embed Twitter search results in your site using JavaScript.</p>
       <div class="tweets" data-search="hop.ie"></div>
 
-      <p>Twitter no longer allows embedded tweets using pure JavaScript, as all requests require authentication. This means we can no longer use the Twitter API with only JavaScript.</p>
-      <h2>Try it yourself</h2>
+      <!--End mc_embed_signup-->
+      <p>Tweets provides you with Twitter search results without the hassle of setting up server-based authentication. Perfect for static websites and pages.</p>
+      <p>With all data supplied as JSON, you can have your Tweets your way.</p>
+
+      <form action="http://hop.us7.list-manage.com/subscribe/post?u=07ab661c8a6f6b3ec4c98c791&amp;id=aadbb948b7" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+        <label for="mce-EMAIL">Let me know when Tweets is ready:</label>
+        <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+        <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
+      </form>
+
+      <h2>Run your own service</h2>
       <p>If you're comfortable setting up a Node.js app, you can <a href="http://github.com/donovanh/tweets">grab the source code</a> and set up your own Tweets service.</p>
-      <p><a href="http://github.com/donovanh/tweets">Tweets</a> is a server-side app that provides Twitter search results, with the correct authentication in place. It is currently available as a Node.js app that you host on your own servers or elsewhere.</p>
-      <p>Download <a href="http://github.com/donovanh/tweets">the Tweets Node.js app</a> here.</p>
+      
+      <div style="clear:both;padding:1em 0 2em 0;">
+        <iframe src="http://ghbtns.com/github-btn.html?user=donovanh&amp;repo=tweets&amp;type=watch&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="152px" height="30px"></iframe>
+        <iframe src="http://ghbtns.com/github-btn.html?user=donovanh&amp;repo=tweets&amp;type=fork&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="156px" height="30px"></iframe>
+        <iframe src="http://ghbtns.com/github-btn.html?user=donovanh&amp;type=follow&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="30px"></iframe>
+      </div>
+
+
     </article>
     <footer class="clearfix">
       <section class="footer-content">
@@ -36,9 +51,10 @@
         var searchPhrase = $(tweetbox).attr('data-search');
         if (searchPhrase.length > 0) {
           $.get('http://tweets.hop.ie/search/'+searchPhrase, function(data) {
-            var outputHTML = '';
+            var outputHTML = '<span class="source">Showing results for search: hop.ie</span>';
             $.each(data.results, function(index, tweet) {
               tweet.text = replaceURLWithHTMLLinks(tweet.text);
+              tweet.created_at = time_ago(tweet.created_at);
               var source = $("#tweet-template").html();
               var template = Handlebars.compile(source);
               outputHTML += template(tweet);
@@ -47,6 +63,9 @@
           });
         }
       });
+
+      /* Other stiff*/
+      /* Headline resizing */
       $("#responsive_headline").fitText(0.38);
     </script>
     <script type="text/x-handlebars-template" id="tweet-template">
@@ -71,5 +90,51 @@
 function replaceURLWithHTMLLinks(text) {
   var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
   return text.replace(exp,"<a href='$1'>$1</a>"); 
+}
+function time_ago(time){
+
+  switch (typeof time) {
+      case 'number': break;
+      case 'string': time = +new Date(time); break;
+      case 'object': if (time.constructor === Date) time = time.getTime(); break;
+      default: time = +new Date();
+  }
+  var time_formats = [
+      [60, 'seconds', 1], // 60
+      [120, '1 minute ago', '1 minute from now'], // 60*2
+      [3600, 'minutes', 60], // 60*60, 60
+      [7200, '1 hour ago', '1 hour from now'], // 60*60*2
+      [86400, 'hours', 3600], // 60*60*24, 60*60
+      [172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
+      [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+      [1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
+      [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+      [4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
+      [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+      [58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
+      [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+      [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
+      [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+  ];
+  var seconds = (+new Date() - time) / 1000,
+      token = 'ago', list_choice = 1;
+
+  if (seconds == 0) {
+      return 'Just now'
+  }
+  if (seconds < 0) {
+      seconds = Math.abs(seconds);
+      token = 'from now';
+      list_choice = 2;
+  }
+  var i = 0, format;
+  while (format = time_formats[i++])
+      if (seconds < format[0]) {
+          if (typeof format[2] == 'string')
+              return format[list_choice];
+          else
+              return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+      }
+  return time;
 }
 </script>
