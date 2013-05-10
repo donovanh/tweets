@@ -1,6 +1,6 @@
-# Tweets (for static websites)
+# Tweets
 
-A simple JSON end point for Twitter tweets. This was developed to allow for the inclusion of Tweet search content on static web pages, available via a JavaScript AJAX GET request.
+A simple JSON end point for Twitter tweets searches. This was developed to allow for the inclusion of Tweet search content on static web pages, available via a JavaScript AJAX GET request.
 
 It runs as a Node.js app, currently hosted on Heroku. Feel free to fork and host your own version wherever suits you.
 
