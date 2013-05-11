@@ -5,10 +5,13 @@ var http = require('http')
     , twitter  = require("ntwitter")
     , redis = require('redis');
 
-var app = express(),
-  server = http.createServer(app),
-  io = require('socket.io').listen(server);
+var app = express();
 
+server = http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+});
+
+io = require('socket.io').listen(server);
 
 app.configure( 
     function() {
@@ -94,9 +97,5 @@ app.get(/^.*$/,
     response.redirect('http://hop.ie/tweets/');
   }
 );
-
-http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server listening on port " + app.get('port'));
-});
 
 console.log('Server running at http://127.0.0.1:5000/');
