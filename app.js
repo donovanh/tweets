@@ -41,29 +41,48 @@ redis.on("error", function (err) {
 /* Server */
 
 app.get('/search/*', function(request, response) {
-    // Set cross domain headers
-    response.header("Access-Control-Allow-Origin", "*");
-    response.header("Access-Control-Allow-Headers", "X-Requested-With");
+  // Set cross domain headers
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-    var searchphrase = request.params[0].split('/').join(' ');
-    if (request.query.url !== undefined && request.query.url.length > 0) {
-      searchphrase += ' ' + request.query.url;
+  var searchphrase = request.params[0].split('/').join(' ');
+  if (request.query.url !== undefined && request.query.url.length > 0) {
+    searchphrase += ' ' + request.query.url;
+  }
+  // Check if cached
+  var redisKey = searchphrase.replace(' ', '');
+  redis.get(redisKey, function (err, result) {
+    if (err) { console.log('Error: '+err); return; }
+    if (result) {
+      response.json(JSON.parse(result));
+    } else {
+      // No result, get search from Twitter and save to Redis
+      twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
+        redis.setex(redisKey, 900, JSON.stringify(data));
+        response.json(data);
+      });
     }
-    // Check if cached
-    var redisKey = searchphrase.replace(' ', '');
-    redis.get(redisKey, function (err, result) {
-      if (err) { console.log('Error: '+err); return; }
-      if (result) {
-        response.json(JSON.parse(result));
-      } else {
-        // No result, get search from Twitter and save to Redis
-        twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
-          redis.setex(redisKey, 900, JSON.stringify(data));
-          response.json(data);
-        });
-      }
-        
+      
+  });
+});
+
+app.get('/stream/*', function(request, response) {
+  // A little experimental, this option streams results from the Twitter stream API
+
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "X-Requested-With");
+
+  var searchphrase = request.params[0].split('/').join(' ');
+  if (request.query.url !== undefined && request.query.url.length > 0) {
+    searchphrase += ' ' + request.query.url;
+  }
+
+  response.writeHead(200, {'Content-Type': 'application/json'});
+  twitter.stream('statuses/filter', {'track':searchphrase.trim()}, function(stream) {
+    stream.on('data', function (data) {
+      response.write(JSON.stringify(data));
     });
+  });
 });
 
 app.get(/^.*$/, 
