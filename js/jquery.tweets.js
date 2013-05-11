@@ -28,6 +28,8 @@
         var init = function() {
             plugin.settings = options || defaults;
 
+            console.log(plugin.settings);
+
             // Check if the destination exists
             if ($('#'+plugin.settings.destinationID).length == 0) {
               console.log('Tweets plugin error: Please supply a destination element for the tweets.');
@@ -38,6 +40,10 @@
               console.log('Tweets plugin error: This plugin requires a server component specified. Please check github.com/donovanh/tweets/ for details.');
               return;
             }
+
+            plugin.settings.searchPhrase = cleanSearchPhrase(plugin.settings.searchPhrase);
+
+            console.log(plugin.settings);
 
             // Get the tweet template
             if ($('#'+plugin.settings.templateID).length == 0) {
@@ -117,6 +123,10 @@
               }
             });
           }
+        }
+
+        var cleanSearchPhrase =function(searchphrase) {
+          return searchphrase.replace('#', '%23');
         }
 
         var updateDatestamps = function() {
