@@ -5,7 +5,10 @@ var http = require('http')
     , twitter  = require("ntwitter")
     , redis = require('redis');
 
-var app = express();
+var app = express(),
+  server = http.createServer(app),
+  io = require('socket.io').listen(server);
+
 
 app.configure( 
     function() {
@@ -80,7 +83,8 @@ app.get('/stream/*', function(request, response) {
   response.writeHead(200, {'Content-Type': 'application/json'});
   twitter.stream('statuses/filter', {'track':searchphrase.trim()}, function(stream) {
     stream.on('data', function (data) {
-      response.write(JSON.stringify(data));
+      io.sockets.emit('tweet', data.text);
+      console.log('.');
     });
   });
 });
