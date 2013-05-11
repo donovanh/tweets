@@ -52,6 +52,8 @@
                   tweet.created_at = time_ago(tweet.created_at);
                   var template = Handlebars.compile(plugin.settings.templateHTML);
                   outputHTML += template(tweet);
+                  // Since the success was successful, add a listener for a stream of further tweets
+                  listenForMoreTweets(plugin.settings);
                 });
                 $("#"+plugin.settings.destinationID).html(outputHTML);
               });
@@ -71,6 +73,18 @@
         // }
 
         // Private methods
+
+        var listenForMoreTweets = function(settings) {
+          var socket = io.connect(settings.tweetSource);
+          socket.on('tweet', function (data) {
+            addToTopOfList(data);
+          });
+          socket.emit('stream', settings.searchPhrase);
+        }
+
+        var addToTopOfList = function(data) {
+          console.log(data);
+        }
 
         var replaceURLWithHTMLLinks = function(text) {
           var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;

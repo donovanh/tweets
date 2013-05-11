@@ -52,7 +52,7 @@
     <script>
       /* Initialise the Tweets plugin */
       $.tweets({
-        searchPhrase: 'hop.ie',
+        searchPhrase: 'zelda',
         templateID: '',
         destinationID: 'tweet-container',
         tweetSource: 'http://tweets.hop.ie'
@@ -61,13 +61,6 @@
       /* Other stuff */
       /* Headline resizing */
       $("#responsive_headline").fitText(0.38);
-
-      var socket = io.connect('http://tweets.hop.ie/stream/microsoft');
-      var tweets = document.getElementById('tweets');
-      socket.on('tweet', function (data) {
-        console.log('Data: ', data);
-        // tweets.innerHTML = tweets.innerHTML + '<br>' + data;
-      });
 
       /* Track dat stat */
       var _gaq = _gaq || [];
