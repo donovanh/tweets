@@ -7,12 +7,6 @@ var http = require('http')
 
 var app = express();
 
-server = http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server listening on port " + app.get('port'));
-});
-
-io = require('socket.io').listen(server);
-
 app.configure( 
     function() {
       app.set('port', process.env.PORT || 5000);
@@ -20,6 +14,14 @@ app.configure(
       app.enable("jsonp callback");
     }
 );
+
+/* Socket.io setup */
+
+server = http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+});
+
+io = require('socket.io').listen(server);
 
 /* Establish Twitter connection */
 
@@ -71,6 +73,8 @@ app.get('/search/*', function(request, response) {
       
   });
 });
+
+var twee = io.of('tweet');
 
 app.get('/stream/*', function(request, response) {
   // A little experimental, this option streams results from the Twitter stream API
