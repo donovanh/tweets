@@ -62,10 +62,11 @@
       /* Headline resizing */
       $("#responsive_headline").fitText(0.38);
 
-      var socket = io.connect('http://localhost:5000/stream/microsoft'),
-      tweets = document.getElementById('tweets');
+      var socket = io.connect('http://localhost:5000/stream/microsoft');
+      var tweets = document.getElementById('tweets');
       socket.on('tweet', function (data) {
-        tweets.innerHTML = tweets.innerHTML + '<br>' + data;
+        console.log('Data: ', data);
+        // tweets.innerHTML = tweets.innerHTML + '<br>' + data;
       });
 
       /* Track dat stat */
