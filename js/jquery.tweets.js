@@ -52,11 +52,11 @@
                   tweet.created_at = time_ago(tweet.created_at);
                   var template = Handlebars.compile(plugin.settings.templateHTML);
                   outputHTML += template(tweet);
-                  // Since the success was successful, add a listener for a stream of further tweets
-                  listenForMoreTweets(plugin.settings);
                 });
                 $("#"+plugin.settings.destinationID).html(outputHTML);
               });
+              // Since the success was successful, add a listener for a stream of further tweets
+              listenForMoreTweets(plugin.settings);
             } else {
               console.log('Tweets plugin error: Please supply a searchPhrase.');
               return;
@@ -77,13 +77,17 @@
         var listenForMoreTweets = function(settings) {
           var socket = io.connect(settings.tweetSource);
           socket.on('tweet', function (data) {
-            addToTopOfList(data);
+            addToTopOfList(data, settings);
           });
           socket.emit('stream', settings.searchPhrase);
         }
 
-        var addToTopOfList = function(data) {
-          console.log(data);
+        var addToTopOfList = function(tweet, settings) {
+          tweet.text = replaceURLWithHTMLLinks(tweet.text);
+          tweet.created_at = time_ago(tweet.created_at);
+          var template = Handlebars.compile(settings.templateHTML);
+          var existingHTML = $("#"+settings.destinationID).html();
+          $("#"+settings.destinationID).html(template(tweet) + existingHTML);
         }
 
         var replaceURLWithHTMLLinks = function(text) {
