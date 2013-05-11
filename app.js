@@ -59,23 +59,23 @@ app.get('/search/*', function(request, response) {
   }
   // Check if cached
   var redisKey = searchphrase.replace(' ', '');
-  redis.get(redisKey, function (err, result) {
-    if (err) { console.log('Error: '+err); return; }
-    if (result) {
-      response.json(JSON.parse(result));
-    } else {
-      // No result, get search from Twitter and save to Redis
-      twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
-        if (data.length > 0) {
+  if (searchphrase.length > 0) {
+    redis.get(redisKey, function (err, result) {
+      if (err) { console.log('Error: '+err); return; }
+      if (result) {
+        response.json(JSON.parse(result));
+      } else {
+        // No result, get search from Twitter and save to Redis
+        twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
           redis.setex(redisKey, 900, JSON.stringify(data));
           response.json(data);
-        } else {
-          response.json({});
-        }
-      });
-    }
-      
-  });
+        });
+      }
+        
+    });
+  } else {
+    response.end('');
+  }
 });
 
 /* Heroku exception */
