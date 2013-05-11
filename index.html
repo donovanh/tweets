@@ -46,7 +46,7 @@
 
     <script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0-rc.3/handlebars.min.js"></script>
-    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="http://tweets.hop.ie/socket.io/socket.io.js"></script>
     <script src="js/jquery.tweets.js"></script>
     <script src="js/jquery.fittext.js"></script>
     <script>
@@ -62,7 +62,7 @@
       /* Headline resizing */
       $("#responsive_headline").fitText(0.38);
 
-      var socket = io.connect('http://localhost:5000/stream/microsoft');
+      var socket = io.connect('http://tweets.hop.ie/stream/microsoft');
       var tweets = document.getElementById('tweets');
       socket.on('tweet', function (data) {
         console.log('Data: ', data);
