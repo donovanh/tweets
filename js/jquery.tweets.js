@@ -1,9 +1,10 @@
 // Tweets
 // A plugin to process a JSON feed of tweets into a HTML container
+// Created by Donovan Hutchinson
 // Requires:
 //  jQuery
 //  Handlebars (for templating)
-// Full instructions: http://hop.ie/tweets/plugin/
+// Full instructions: http://github.com/donovanh/tweets-plugin/
 // Based on: jQuery Plugin Boilerplate by Stefan Gabos
 
 ;(function($) {
