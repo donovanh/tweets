@@ -50,12 +50,14 @@
             if (plugin.settings.searchPhrase.length > 0) {
               $.get(plugin.settings.tweetSource+'/search/'+plugin.settings.searchPhrase, function(data) {
                 var outputHTML = '';
-                $.each(data.results, function(index, tweet) {
-                  tweet.text = replaceURLWithHTMLLinks(tweet.text);
-                  tweet.relative_timestamp = time_ago(tweet.created_at);
-                  var template = Handlebars.compile(plugin.settings.templateHTML);
-                  outputHTML += template(tweet);
-                });
+                if (data.results !== undefined && data.results.length > 0) {
+                  $.each(data.results, function(index, tweet) {
+                    tweet.text = replaceURLWithHTMLLinks(tweet.text);
+                    tweet.relative_timestamp = time_ago(tweet.created_at);
+                    var template = Handlebars.compile(plugin.settings.templateHTML);
+                    outputHTML += template(tweet);
+                  });
+                }
                 $("#"+plugin.settings.destinationID).html(outputHTML);
               });
               // Since the success was successful, add a listener for a stream of further tweets
