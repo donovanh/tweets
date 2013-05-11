@@ -75,28 +75,22 @@ app.get('/search/*', function(request, response) {
 });
 
 /* Heroku exception */
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
+if (process.env.REDISCLOUD_URL) {
+  io.configure(function () { 
+    io.set("transports", ["xhr-polling"]); 
+    io.set("polling duration", 10); 
+  });
+}
 
-app.get('/stream/*', function(request, response) {
-  // A little experimental, this option streams results from the Twitter stream API
-
-  response.header("Access-Control-Allow-Origin", "*");
-  response.header("Access-Control-Allow-Headers", "X-Requested-With");
-
-  var searchphrase = request.params[0].split('/').join(' ');
-  if (request.query.url !== undefined && request.query.url.length > 0) {
-    searchphrase += ' ' + request.query.url;
-  }
-
-  response.writeHead(200, {'Content-Type': 'application/json'});
-  twitter.stream('statuses/filter', {'track':searchphrase.trim()}, function(stream) {
-    stream.on('data', function (data) {
-      io.sockets.emit('tweet', data.text);
-      console.log('.');
-    });
+io.sockets.on('connection', function(socket) {
+  socket.on('stream', function(searchPhrase) {
+    twitter.stream('statuses/filter', { track: [searchPhrase] },
+      function(stream) {
+        stream.on('data', function(tweet) {
+            socket.emit('tweet', tweet);
+        });
+      }
+    );
   });
 });
 
