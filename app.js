@@ -74,7 +74,11 @@ app.get('/search/*', function(request, response) {
   });
 });
 
-var twee = io.of('tweet');
+/* Heroku exception */
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
 
 app.get('/stream/*', function(request, response) {
   // A little experimental, this option streams results from the Twitter stream API
