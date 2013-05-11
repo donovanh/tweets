@@ -15,10 +15,13 @@
             searchPhrase: 'hop.ie',
             templateID: 'tweet-template-default',
             destinationID: 'tweet-container',
-            tweetSource: 'Your source URL, eg. tweets.example.com'
+            tweetSource: 'Your source URL, eg. tweets.example.com',
+            maxTweets: 15
         }
 
         var plugin = this;
+
+        var updateTimer = null;
 
         plugin.settings = {}
 
@@ -49,7 +52,7 @@
                 var outputHTML = '';
                 $.each(data.results, function(index, tweet) {
                   tweet.text = replaceURLWithHTMLLinks(tweet.text);
-                  tweet.created_at = time_ago(tweet.created_at);
+                  tweet.relative_timestamp = time_ago(tweet.created_at);
                   var template = Handlebars.compile(plugin.settings.templateHTML);
                   outputHTML += template(tweet);
                 });
@@ -62,10 +65,13 @@
               return;
             }
 
+            // Set timeout to update the timestamps
+            updateTimer = window.setInterval(function() { updateDatestamps(); }, 10000);
+
         }
 
         // Default handlebars template
-        var tweet_template_default = '<article class="tweet"><section class="user-details"><a href="http://twitter.com/{{from_user}}"><div class="user-image" style="background-image: url({{profile_image_url}})"></div><p><strong>{{from_user_name}}</strong><span>{{from_user}}</span></p></a></section><p class="text">{{{text}}}</p><p class="timing"><a href="http://twitter.com/{{from_user}}/statuses/{{id_str}}">{{created_at}}</a></p></article>';
+        var tweet_template_default = '<article class="tweet"><section class="user-details"><a href="http://twitter.com/{{from_user}}"><div class="user-image" style="background-image: url({{profile_image_url}})"></div><p><strong>{{from_user_name}}</strong><span>{{from_user}}</span></p></a></section><p class="text">{{{text}}}</p><p class="timing" data-created-at="{{created_at}}"><a href="http://twitter.com/{{from_user}}/statuses/{{id_str}}">{{relative_timestamp}}</a></p></article>';
 
 
         // plugin.foo_public_method = function() {
@@ -84,10 +90,41 @@
 
         var addToTopOfList = function(tweet, settings) {
           tweet.text = replaceURLWithHTMLLinks(tweet.text);
-          tweet.created_at = time_ago(tweet.created_at);
+          tweet.relative_timestamp = time_ago(tweet.created_at);
+          tweet.from_user = tweet.user.screen_name;
+          tweet.profile_image_url = tweet.user.profile_image_url;
+          tweet.from_user_name = tweet.user.name;
           var template = Handlebars.compile(settings.templateHTML);
           var existingHTML = $("#"+settings.destinationID).html();
-          $("#"+settings.destinationID).html(template(tweet) + existingHTML);
+          var outputHTML = $('<div></div>');
+          outputHTML.html(template(tweet));
+          outputHTML.find('.tweet').addClass('new');
+          $("#"+settings.destinationID).html(outputHTML.html() + existingHTML);
+          // Remove new class to trigger a flash in the CSS transition
+          $('.tweet').removeClass('new');
+          // Makre sure we don't have too many tweets showing
+          trimTweets(settings.maxTweets);
+        }
+
+        var trimTweets = function(maxTweets) {
+          // Trim the number of tweets shown to reduce memory usage
+          if ($('.tweet').length > maxTweets) {
+            $.each($('.tweet'), function(index, tweet) {
+              if (index > maxTweets) {
+                $(tweet).remove();
+              }
+            });
+          }
+        }
+
+        var updateDatestamps = function() {
+          // Scan all the tweets and update the timestamps on each
+          $.each($('.tweet'), function(index, tweet) {
+            var dateHTML = $(tweet).find('p.timing');
+            var originalDate = $(dateHTML).attr('data-created-at');
+            var relativeDate = time_ago(originalDate);
+            $(dateHTML).find('a').text(relativeDate);
+          });
         }
 
         var replaceURLWithHTMLLinks = function(text) {

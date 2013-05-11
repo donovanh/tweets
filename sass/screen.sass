@@ -19,7 +19,7 @@ h1, h2, h3, p
   margin: 0
 
 h1
-  font-size: 12em
+  font-size: 11em
   line-height: 1em
   padding: 0.25em 0 0
 
@@ -56,6 +56,11 @@ h2
     padding: 0.5em 5% 0 5%
     background-color: #fcf5ea
     @include border-radius(1em)
+    opacity: 1
+    @include transition(opacity 0.5s)
+
+    &.new
+      opacity: 0
 
     .user-details
       margin-bottom: -5px

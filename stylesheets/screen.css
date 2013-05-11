@@ -79,7 +79,7 @@ h1, h2, h3, p {
 }
 
 h1 {
-  font-size: 12em;
+  font-size: 11em;
   line-height: 1em;
   padding: 0.25em 0 0;
 }
@@ -127,6 +127,14 @@ h2 {
   -ms-border-radius: 1em;
   -o-border-radius: 1em;
   border-radius: 1em;
+  opacity: 1;
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+}
+.tweets .tweet.new {
+  opacity: 0;
 }
 .tweets .tweet .user-details {
   margin-bottom: -5px;
