@@ -90,6 +90,9 @@ io.sockets.on('connection', function(socket) {
   socket.on('stream', function(searchPhrase) {
     twitter.stream('statuses/filter', { track: [searchPhrase] },
       function(stream) {
+        stream.on('error', function(error, code) {
+          console.log("My error: " + error + ": " + code);
+        });
         stream.on('data', function(tweet) {
             socket.emit('tweet', tweet);
         });
