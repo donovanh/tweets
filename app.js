@@ -67,8 +67,12 @@ app.get('/search/*', function(request, response) {
       } else {
         // No result, get search from Twitter and save to Redis
         twitter.search(searchphrase.trim(), {include_entities: true}, function(err, data) {
-          redis.setex(redisKey, 60, JSON.stringify(data));
-          response.json(data);
+          if (data !== undefined && data.length > 0) {
+            redis.setex(redisKey, 60, JSON.stringify(data));
+            response.json(data);
+          } else {
+            response.end('No data returned');
+          }
         });
       }
         
