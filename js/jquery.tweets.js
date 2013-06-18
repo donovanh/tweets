@@ -28,8 +28,6 @@
         var init = function() {
             plugin.settings = options || defaults;
 
-            console.log(plugin.settings);
-
             // Check if the destination exists
             if ($('#'+plugin.settings.destinationID).length == 0) {
               console.log('Tweets plugin error: Please supply a destination element for the tweets.');
@@ -43,8 +41,6 @@
 
             plugin.settings.searchPhrase = cleanSearchPhrase(plugin.settings.searchPhrase);
 
-            console.log(plugin.settings);
-
             // Get the tweet template
             if ($('#'+plugin.settings.templateID).length == 0) {
               // Use the default template
@@ -56,8 +52,8 @@
             if (plugin.settings.searchPhrase.length > 0) {
               $.get(plugin.settings.tweetSource+'/search/'+plugin.settings.searchPhrase, function(data) {
                 var outputHTML = '';
-                if (data.results !== undefined && data.results.length > 0) {
-                  $.each(data.results, function(index, tweet) {
+                if (data.statuses !== undefined && data.statuses.length > 0) {
+                  $.each(data.statuses, function(index, tweet) {
                     tweet.text = replaceURLWithHTMLLinks(tweet.text);
                     tweet.relative_timestamp = time_ago(tweet.created_at);
                     var template = Handlebars.compile(plugin.settings.templateHTML);
