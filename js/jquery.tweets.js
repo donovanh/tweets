@@ -52,6 +52,7 @@
             if (plugin.settings.searchPhrase.length > 0) {
               $.get(plugin.settings.tweetSource+'/search/'+plugin.settings.searchPhrase, function(data) {
                 var outputHTML = '';
+                console.log(data.statuses);
                 if (data.statuses !== undefined && data.statuses.length > 0) {
                   $.each(data.statuses, function(index, tweet) {
                     tweet.text = replaceURLWithHTMLLinks(tweet.text);
@@ -75,7 +76,14 @@
         }
 
         // Default handlebars template
-        var tweet_template_default = '<article class="tweet"><section class="user-details"><a href="http://twitter.com/{{from_user}}"><div class="user-image" style="background-image: url({{profile_image_url}})"></div><p><strong>{{from_user_name}}</strong><span>{{from_user}}</span></p></a></section><p class="text">{{{text}}}</p><p class="timing" data-created-at="{{created_at}}"><a href="http://twitter.com/{{from_user}}/statuses/{{id_str}}">{{relative_timestamp}}</a></p></article>';
+        var tweet_template_default = '<article class="tweet">\
+        <section class="user-details">\
+        <a href="http://twitter.com/{{from_user}}">\
+        <div class="user-image" style="background-image: url({{user.profile_image_url}})"></div>\
+        <p><strong>{{user.name}}</strong><span>{{user.screen_name}}</span></p></a></section>\
+        <p class="text">{{{text}}}</p><p class="timing" data-created-at="{{created_at}}">\
+        <a href="http://twitter.com/{{from_user}}/statuses/{{id_str}}">{{relative_timestamp}}</a>\
+        </p></article>';
 
 
         // plugin.foo_public_method = function() {
